@@ -152,6 +152,7 @@ public class MultiplicationGame {
 
     // ---> setRandomxAndy AND ---> setCrawlxAndy.
     private void setRandomxAndy() {
+        // this.sp.playSound(3);
         List xList = this.getAccessablePositions("x");
         List yList = this.getAccessablePositions("y");
         if(xList.size() == 0 | yList.size() == 0) { // Jos ei onnistu löytää yhtään jo laskettua laskua, joka on vielä yli targetin, niin valitaan lasku, joka on pienin vielä suorittamaton
@@ -350,13 +351,16 @@ public class MultiplicationGame {
         this.answerTime = (answerEndTime - this.answerStartTime);
         if(this.answer.equals(this.getCorrectAnswer())) {
             int prevAnswerTime = this.answerTimeMatrix[this.x-x0][this.y-y0];
-            this.answerTimeMatrix[this.x-x0][this.y-y0] = (int) Math.min((this.answerTime + prevAnswerTime) / 2, this.initialAnswerTime);
+            int newTime = (int) Math.min((this.answerTime + prevAnswerTime) / 2, this.initialAnswerTime);
+            this.answerTimeMatrix[this.x-x0][this.y-y0] = newTime;
+            if(newTime > this.answerTargetTime) this.sp.playSound(1);
+            if(newTime <= this.answerTargetTime) this.sp.playSound(3);
         } else { // Vaara vastaus
+            this.sp.playSound(2);
             this.answerTime = this.answerTime + this.initialAnswerTime;
             this.answerTimeMatrix[this.x-x0][this.y-y0] = (int) Math.min(this.answerTime, this.initialAnswerTime);
         }
 
-        this.sp.playSound(1);
 
         this.checkEndCondition();
     }

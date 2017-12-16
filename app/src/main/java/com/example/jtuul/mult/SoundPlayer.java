@@ -46,11 +46,13 @@ public class SoundPlayer extends Activity {
             }
         });
 
-        sm = new int[3];
+        sm = new int[5];
         // fill your sounds
-        sm[0] = soundPool.load(mContext, R.raw.test, 1);
-        sm[1] = soundPool.load(mContext, R.raw.test, 1);
-        sm[2] = soundPool.load(mContext, R.raw.test, 1);
+        sm[0] = soundPool.load(mContext, R.raw.click, 1);
+        sm[1] = soundPool.load(mContext, R.raw.correct, 1);
+        sm[2] = soundPool.load(mContext, R.raw.wrong, 1);
+        sm[3] = soundPool.load(mContext, R.raw.gotitintime, 1);
+        sm[4] = soundPool.load(mContext, R.raw.gamewon, 1);
         amg = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
     }
 
