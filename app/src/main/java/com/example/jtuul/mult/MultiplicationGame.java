@@ -17,6 +17,7 @@ import java.util.List;
  * TODO: Pystyisikö suoritusta nopeuttamaan, uusi thread? Petrin kanssa?
  * TODO: Tee aloitusruutuaktiviteetti ja siihen nappulta jne. (sama layout)
  * TODO: add sounds
+ * TODO: Joelin kännyssä ei toimi - näyttö "täyttyy", mitä pitäisi tehdä, jos näyttö liian pieni?
  *
  */
 
@@ -374,7 +375,6 @@ public class MultiplicationGame {
         // if(notFirstRound)
         this.answerStartTime = System.currentTimeMillis();
         this.setNewxAndy();
-
     }
 
     public void checkEndCondition() {
@@ -388,8 +388,10 @@ public class MultiplicationGame {
                 }
             }
         }
-        if(endIt)
+        if(endIt) {
+            sp.playSound(4);
             this.initializeMatrix(answerTimeMatrix, initialAnswerTime);
+        }
     }
 
     public void setSoundPlayer(Activity act) {
