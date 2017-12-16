@@ -31,7 +31,6 @@ public class CustomGridAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
-
         int test = 1;
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.cell, null);

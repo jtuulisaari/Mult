@@ -3,6 +3,10 @@ package com.example.jtuul.mult;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -20,7 +24,7 @@ public class MainActivity extends Activity {
 
     //private int x0; private int x1; private int y0; private int y1;
     // game; // Tama "aloitus" naytolta
-    int x0 = 6; int x1 = 9; int y0 = 6; int y1 = 9;
+    int x0 = 2; int x1 = 7; int y0 = 2; int y1 = 7;
     public MultiplicationGame game = new MultiplicationGame(x0, x1, y0, y1); // Tama "aloitus" naytolta
     int xLen = this.game.answerTimeMatrix.length;
     int yLen = this.game.answerTimeMatrix[0].length;
@@ -32,7 +36,7 @@ public class MainActivity extends Activity {
     private TextView xTimesy;
     private boolean firstRound = true;
     public final String[] items = getMultiplicationIntegers();
-
+    // private MediaPlayer FXPlayer;
 
     public String[] getMultiplicationIntegers() {
         int n = 0;
@@ -52,6 +56,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         new Random().setSeed(1);
+        game.setSoundPlayer(this);
 
         //x0 = 1; x1 = 10; y0 = 1; y1 = 10; xLen = x1-x0+1; x1 = y1-y0+1;
 

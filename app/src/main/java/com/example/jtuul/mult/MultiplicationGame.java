@@ -1,5 +1,7 @@
 package com.example.jtuul.mult;
 
+import android.app.Activity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,7 @@ public class MultiplicationGame {
     private long answerStartTime = 0;
     private double answerTime;
     public double answerTargetTime = 5 * 1000; // Mikä on vastaukselle tavoite aika
+    SoundPlayer sp;
 
     public MultiplicationGame(int x0, int x1, int y0, int y1) { // Konstruktori
 
@@ -254,11 +257,6 @@ public class MultiplicationGame {
         } else {
             this.setCrawlxAndy(); // Crawl voi päätyä uuteen
         }
-        if(this.x == 9 & this.y == 8) this.catchFun();
-        if(this.x > 7 & this.y > 7) this.catchFun();
-        if(this.x == 9 & this.y == 8) this.catchFun();
-        if(this.x == 8 & this.y == 9) this.catchFun();
-
         if(this.x > x1 | this.x < x0) this.catchFun();
         if(this.y > y1 | this.y < y0) this.catchFun();
 
@@ -357,6 +355,9 @@ public class MultiplicationGame {
             this.answerTime = this.answerTime + this.initialAnswerTime;
             this.answerTimeMatrix[this.x-x0][this.y-y0] = (int) Math.min(this.answerTime, this.initialAnswerTime);
         }
+
+        this.sp.playSound(1);
+
         this.checkEndCondition();
     }
 
@@ -371,6 +372,7 @@ public class MultiplicationGame {
         this.setNewxAndy();
 
     }
+
     public void checkEndCondition() {
         List<Integer> ret = new ArrayList<Integer>();
         boolean endIt = true;
@@ -384,5 +386,9 @@ public class MultiplicationGame {
         }
         if(endIt)
             this.initializeMatrix(answerTimeMatrix, initialAnswerTime);
+    }
+
+    public void setSoundPlayer(Activity act) {
+        sp = new SoundPlayer(act);
     }
 }
