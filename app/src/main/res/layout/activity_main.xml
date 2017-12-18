@@ -3,17 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:screenOrientation="portrait"
-    android:layout_weight="1"
     android:layout_centerVertical="true"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <GridView
-        android:id="@+id/myGridView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:numColumns="10"/>
+        android:orientation="vertical"
+        android:layout_weight="1">
+        <GridView
+            android:id="@+id/myGridView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:numColumns="10"/>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/hint"
@@ -29,18 +35,12 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity = "center"/>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-    </FrameLayout>
-
     <LinearLayout
         android:id="@+id/fourBtnView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        android:layout_weight="4">
+        android:layout_weight="1">
 
         <FrameLayout
             android:layout_width="0dp"
@@ -52,13 +52,14 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_weight="1">
+            android:layout_weight="2">
 
             <Button
                 android:id="@+id/button1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:onClick="onClickBtn1"/>
 
             <Button
@@ -66,6 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:onClick="onClickBtn2"/>
         </LinearLayout>
 
@@ -73,19 +75,21 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_weight="1">
+            android:layout_weight="2">
 
             <Button
                 android:id="@+id/button3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:onClick="onClickBtn3"/>
             <Button
                 android:id="@+id/button4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:onClick="onClickBtn4"/>
         </LinearLayout>
 
@@ -95,10 +99,10 @@
             android:layout_weight="1">
         </FrameLayout>
     </LinearLayout>
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:orientation="horizontal"
         android:layout_weight="1">
-    </FrameLayout>
-
+    </LinearLayout>
 </LinearLayout>

@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
 
     //private int x0; private int x1; private int y0; private int y1;
     // game; // Tama "aloitus" naytolta
-    int x0 = 6; int x1 = 9; int y0 = 6; int y1 = 9;
+    int x0 = 1; int x1 = 10; int y0 = 1; int y1 = 10;
     public MultiplicationGame game = new MultiplicationGame(x0, x1, y0, y1); // Tama "aloitus" naytolta
     int xLen = this.game.answerTimeMatrix.length;
     int yLen = this.game.answerTimeMatrix[0].length;

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.TextView;
 
 /**
  * Created by jtuul on 12/5/2017.
@@ -35,18 +36,18 @@ public class CustomGridAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.cell, null);
         }
-        Button button = (Button) convertView.findViewById(R.id.grid_item);
-        button.setBackgroundColor(ma.getColorTest(position));
-        button.setText(items[position]);
+        TextView gridTextView = (TextView) convertView.findViewById(R.id.grid_item);
+        gridTextView.setBackgroundColor(ma.getColorTest(position));
+        gridTextView.setText(items[position]);
 
         if( ma.getPositionFromxAndy() == position) {
-            button.setText("O");
+            gridTextView.setText("O");
         }
         int answerTime = ma.game.answerTimeMatrix[ma.getxAndyFromPosition(position, "y")][ma.getxAndyFromPosition(position, "x")];
         if(answerTime <= ma.game.answerTargetTime) {
-            button.setText("X");
+            gridTextView.setText("X");
         }
-        convertView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 100));
+        //convertView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 80));
         return convertView;
     }
 

@@ -13,11 +13,9 @@ import java.util.List;
  * Paitsi jos edellisellä kierroksella tultiin uuteen ruutuun ja se ei mennyt target-nopeudella
  * Tällöin valitaan se ruutu, joka on lähinnä target aikaa
  *
- * TODO: Tee target-nopeudella tehtyihin ruutuihin merkki "x" - lopulliseen versioon kuva?
  * TODO: Pystyisikö suoritusta nopeuttamaan, uusi thread? Petrin kanssa?
  * TODO: Tee aloitusruutuaktiviteetti ja siihen nappulta jne. (sama layout)
- * TODO: add sounds
- * TODO: Joelin kännyssä ei toimi - näyttö "täyttyy", mitä pitäisi tehdä, jos näyttö liian pieni?
+ * TODO: Jostakin syystä voi vielä tulla oikea vastaus kahteen kertaan. Lisäksi täysin random-vastauksen voisi poistaa.
  *
  */
 
@@ -372,9 +370,10 @@ public class MultiplicationGame {
     }
 
     public void newRound(boolean notFirstRound) {
-        // if(notFirstRound)
         this.answerStartTime = System.currentTimeMillis();
-        this.setNewxAndy();
+        if(!notFirstRound) this.x = x0; this.y = y0;
+        if(notFirstRound) this.setNewxAndy();
+
     }
 
     public void checkEndCondition() {
