@@ -33,6 +33,8 @@ public class MultiplicationGame {
     private double answerTime;
     public double answerTargetTime = 5 * 1000; // Mikä on vastaukselle tavoite aika
     SoundPlayer sp;
+    public double points = 0;
+    public double previousPoints = 0;
 
     public MultiplicationGame(int x0, int x1, int y0, int y1) { // Konstruktori
 
@@ -357,11 +359,25 @@ public class MultiplicationGame {
         } else { // Vaara vastaus
             this.sp.playSound(2);
             this.answerTime = this.answerTime + this.initialAnswerTime;
-            this.answerTimeMatrix[this.x-x0][this.y-y0] = (int) Math.min(this.answerTime, this.initialAnswerTime);
+            this.answerTime = (int) Math.min(this.answerTime, this.initialAnswerTime);
+            this.answerTimeMatrix[this.x-x0][this.y-y0] = (int) this.answerTime;
         }
-
+        this.setPoints();
 
         this.checkEndCondition();
+    }
+
+    public void setPoints() {
+        if(this.answer.equals(this.getCorrectAnswer())) { // Lisää pisteitä vain jos vastaus on oikea
+            this.previousPoints = this.points;
+            // Pisteitä saa siitä paljonko paransi edellistä noopeinta aikaa, heikompi aika ei kuitenkaan vähennä pisteitä
+            double answerTime = this.answerTimeMatrix[this.x-x0][this.y-y0];
+            double timeDiff =  Math.max(0, (answerTime - this.answerTime)); // Nolla tarvitaan kun seuraavaksi nostetaan toiseen potenssiin.
+            double mult = 100 - Math.abs(49 - this.y*this.x)*2;
+            this.points = this.points +  Math.pow(timeDiff, 2)  / Math.pow(this.initialAnswerTime, 2) * mult; // 100 pistettä on maksimi --> 10000 koko pelistä <--- tähän voisi laittaa vielä vaikeuskertoimen mukaisen kertoimen 100 tilalle?
+            this.points = Math.max(this.points, this.previousPoints);
+            if(this.answerTime <= this.answerTargetTime) this.points = this.points + 10; // Muualle täytyy tehdä lisäys, että tän voi saada vain kerran
+        }
     }
 
     public void setxAndyLen() {
@@ -373,7 +389,6 @@ public class MultiplicationGame {
         this.answerStartTime = System.currentTimeMillis();
         if(!notFirstRound) this.x = x0; this.y = y0;
         if(notFirstRound) this.setNewxAndy();
-
     }
 
     public void checkEndCondition() {
@@ -396,4 +411,5 @@ public class MultiplicationGame {
     public void setSoundPlayer(Activity act) {
         sp = new SoundPlayer(act);
     }
+
 }

@@ -3,6 +3,7 @@ package com.example.jtuul.mult;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -29,13 +30,14 @@ public class MainActivity extends Activity {
     int xLen = this.game.answerTimeMatrix.length;
     int yLen = this.game.answerTimeMatrix[0].length;
 
-    private TextView text;
     private Button[] buttons = new Button[4];
     private CustomGridAdapter gridAdapter;
     float greenToRedPortion;
     private TextView xTimesy;
+    private TextView hint;
     private boolean firstRound = true;
     public final String[] items = getMultiplicationIntegers();
+
     // private MediaPlayer FXPlayer;
 
     public String[] getMultiplicationIntegers() {
@@ -58,7 +60,10 @@ public class MainActivity extends Activity {
         new Random().setSeed(1);
         game.setSoundPlayer(this);
 
-        //x0 = 1; x1 = 10; y0 = 1; y1 = 10; xLen = x1-x0+1; x1 = y1-y0+1;
+        this.xTimesy = findViewById(R.id.xTimesy);
+        this.hint = findViewById(R.id.hint);
+
+        // x0 = 1; x1 = 10; y0 = 1; y1 = 10; xLen = x1-x0+1; x1 = y1-y0+1;
 
         if(firstRound) {
             this.firstRound();
@@ -78,6 +83,7 @@ public class MainActivity extends Activity {
                 // Log.i("ITEM_CLICKED", "" + (String) (gridView.getItemAtPosition(position)));
             }
         });
+
         // SharedPreferences.Editor editor = getSharedPreferences("gameState", MODE_PRIVATE).edit();
     }
 
@@ -110,6 +116,7 @@ public class MainActivity extends Activity {
     public void newRound(int answer) {
         game.answer = answer;
         game.evaluateAnswer();
+        this.setHintText();
         this.game.newRound(true);
         this.gridAdapter.notifyDataSetChanged();
         this.setxTimesyText();
@@ -120,6 +127,7 @@ public class MainActivity extends Activity {
         // Toast.makeText(this, "Clicked on Button1", Toast.LENGTH_LONG).show();
         this.newRound(Integer.parseInt(this.buttons[0].getText().toString()));
     }
+
     public void onClickBtn2(View v) {
         // Toast.makeText(this, "Clicked on Button2", Toast.LENGTH_LONG).show();
         this.newRound(Integer.parseInt(this.buttons[1].getText().toString()));
@@ -185,22 +193,19 @@ public class MainActivity extends Activity {
         R = (R << 16) & 0x00FF0000;
         G = (G << 8) & 0x0000FF00;
         B = B & 0x000000FF;
-
         return 0xFF000000 | R | G | B;
     }
 
     private void setxTimesyText() {
-        String str;
-        TextView xTimesy = findViewById(R.id.xTimesy);
-        str = game.getxTimesYStr() + " = ?";
-        xTimesy.setText(str);
-        xTimesy.setTextSize(40);
+        String str = game.getxTimesYStr() + " = ?";
+        this.xTimesy.setText(str);
+        this.xTimesy.setTextSize(40);
     }
 
     private void setHintText() {
-        TextView hint = findViewById(R.id.hint);
-        hint.setText("Test");
-        hint.setTextSize(20);
+        hint.setTextColor(Color.GRAY);
+        hint.setTextSize(60);
+        hint.setText(String.valueOf((int) this.game.points));
     }
 
     private void setAnswerButtonsText() {

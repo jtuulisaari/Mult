@@ -36,6 +36,7 @@ public class CustomGridAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.cell, null);
         }
+
         TextView gridTextView = (TextView) convertView.findViewById(R.id.grid_item);
         gridTextView.setBackgroundColor(ma.getColorTest(position));
         gridTextView.setText(items[position]);
