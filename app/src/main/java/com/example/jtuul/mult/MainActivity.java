@@ -1,5 +1,6 @@
 package com.example.jtuul.mult;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -12,6 +13,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
@@ -20,6 +24,8 @@ import android.widget.TextView;
 import org.json.JSONArray;
 
 import java.util.Random;
+
+import static java.lang.Thread.sleep;
 
 public class MainActivity extends Activity {
 
@@ -203,9 +209,16 @@ public class MainActivity extends Activity {
     }
 
     private void setHintText() {
+
         hint.setTextColor(Color.GRAY);
-        hint.setTextSize(60);
-        hint.setText(String.valueOf((int) this.game.points));
+        hint.setText(String.valueOf( (int) this.game.points));
+        hint.setTextSize(40);
+
+        Animation animation=new ScaleAnimation(5,1,5,1, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f); // https://stackoverflow.com/questions/7677250/animation-of-textviews-text-size & https://stackoverflow.com/questions/7414065/android-scale-animation-on-view
+        animation.setDuration(1000);
+        // animation.setRepeatMode(Animation.RESTART);
+        animation.setRepeatCount(1);
+        hint.startAnimation(animation);
     }
 
     private void setAnswerButtonsText() {

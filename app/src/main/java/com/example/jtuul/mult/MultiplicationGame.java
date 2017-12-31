@@ -16,7 +16,10 @@ import java.util.List;
  * TODO: Pystyisikö suoritusta nopeuttamaan, uusi thread? Petrin kanssa?
  * TODO: Tee aloitusruutuaktiviteetti ja siihen nappulta jne. (sama layout)
  * TODO: Jostakin syystä voi vielä tulla oikea vastaus kahteen kertaan. Lisäksi täysin random-vastauksen voisi poistaa.
- *
+ * TODO: Menee edelleen väärän vastauksen seurauksena ainakin kulmittain liian pitkälle TAI jo suoritettuun ruutuun. Ainakin jälkimmäinen pitää korjata.
+ * TODO: Edelliseen liittyen: tee uudestaan getAccessablePositions-menettely. Tee tästä matriisi, jossa boolean arvot, tee sen jälkeen myös crawl siten, että testataan, ettei päädy tällaiseen, MUTTA jos ei muita vaihtoehtoja niin pitää siirtyä taas arvontaan (esim. nurkassa siten, ettei crawl ole mahdollinen.
+ * TODO: Huomattu Joelin puhelimella, ettei esim. 1:5 * 1:10 toimi (epäsymmetrinen tapaus).
+ * TODO: Muuta samalla pistelaskua site, ettei virheen jälkeen voi saada enää pisteitä lähtien siitä, kuinka paljon aika paranee... Tätä varten tarvitaan kuten R:ssä toinen matriisi, josta pisteet?
  */
 
 public class MultiplicationGame {
@@ -162,6 +165,7 @@ public class MultiplicationGame {
             int xPos = this.getRandomInt(0, xList.size()-1);
             int yPos = this.getRandomInt(0, yList.size()-1);
 
+            if((int) xList.get(xPos) + x0 == this.x  & (int) yList.get(yPos) + y0 == this.y) this.catchFun();
             this.x = (int) xList.get(xPos) + x0;
             this.y = (int) yList.get(yPos) + y0;
             if(this.x > x1 | this.x < x0) this.catchFun();
@@ -207,7 +211,6 @@ public class MultiplicationGame {
             x0 = -1;
         if(this.y < y0)
             x0 = -1;
-
     }
 
     private int getxPos() { return this.x - x0; }
