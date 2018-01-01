@@ -5,6 +5,8 @@ import android.app.Activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.random;
+
 /**
  * Created by jtuul on 12/2/2017.
  * Tama luokka pitää sisällään kaikki pelin logiikkaan tarvittavat muuttujat ja metodit.
@@ -20,6 +22,9 @@ import java.util.List;
  * TODO: Edelliseen liittyen: tee uudestaan getAccessablePositions-menettely. Tee tästä matriisi, jossa boolean arvot, tee sen jälkeen myös crawl siten, että testataan, ettei päädy tällaiseen, MUTTA jos ei muita vaihtoehtoja niin pitää siirtyä taas arvontaan (esim. nurkassa siten, ettei crawl ole mahdollinen.
  * TODO: Huomattu Joelin puhelimella, ettei esim. 1:5 * 1:10 toimi (epäsymmetrinen tapaus).
  * TODO: Muuta samalla pistelaskua site, ettei virheen jälkeen voi saada enää pisteitä lähtien siitä, kuinka paljon aika paranee... Tätä varten tarvitaan kuten R:ssä toinen matriisi, josta pisteet?
+ * TODO: Tee uusi activity, high score?
+ *
+ * PLAN: tee toinen matriisi, jossa minimiaika, jos tämä alittaa targetTimen niin tämä ei ole "accessable"; lisää sen jälkeen menettely random-valintaan ja pistelaskuun.
  */
 
 public class MultiplicationGame {
@@ -32,6 +37,7 @@ public class MultiplicationGame {
     private boolean alreadyOnNew = false;
     // int[][] answerTimeMatrix = new int[10][10];
     public int[][] answerTimeMatrix;
+    public int[][] lowestAnswerTimeMatrix;
     private long answerStartTime = 0;
     private double answerTime;
     public double answerTargetTime = 5 * 1000; // Mikä on vastaukselle tavoite aika
@@ -45,7 +51,9 @@ public class MultiplicationGame {
         this.x = x0; this.y = y0;
         this.setxAndyLen();
         answerTimeMatrix = new int[xLen][yLen];
+        lowestAnswerTimeMatrix = new int[xLen][yLen];
         this.initializeMatrix(answerTimeMatrix, initialAnswerTime);
+        this.initializeMatrix(lowestAnswerTimeMatrix, initialAnswerTime);
         // int[][] relMatrix = new int[xLen][yLen];
         // this.initializeMatrix(relMatrix, 0);
         int xx = 1;
@@ -61,8 +69,8 @@ public class MultiplicationGame {
         Integer[] answersShown = new Integer[4];
 
         // Tee ensin kymmenen vaihtoehtoa, joista vain yksi oikein
-        Double rnd1 = Math.floor(Math.random() * this.x1*this.y1);
-        Double rnd2 = Math.floor(Math.random() * 10 - 5);
+        Double rnd1 = Math.floor(random() * this.x1*this.y1);
+        Double rnd2 = Math.floor(random() * 10 - 5);
         wrongAnswers[0] = rnd1.intValue();
         wrongAnswers[1] = rnd1.intValue() + this.x * this.y;
         wrongAnswers[2] = rnd2.intValue() + this.x * this.y;
@@ -77,28 +85,26 @@ public class MultiplicationGame {
 
         answersShown[3] = x * y; // Varmistetaan, ettei tule oikea vastaus tuplana (kts. identical())
         for (int i = 0; i <= 3; ++i) {
-            answersShown[i] = wrongAnswers[this.getRandomInt(0, 10)];
+            answersShown[i] = wrongAnswers[this.randomWithRange(0, 10)];
             boolean cond = true;
             int n = 0; int addOn = 0;
             while ((answersShown[i] < x0*y0 | answersShown[i] > x1*y1 | cond) & x1*y1-x0*y0 > 2) {
                 n = n+1;
-                Double tmp = Math.floor(Math.random() * 10 - 5);
+                Double tmp = Math.floor(random() * 10 - 5);
                 if(n > 10) addOn = tmp.intValue(); // Varmistetaan, että löytyy sopiva väärä vastaus
-                answersShown[i] = wrongAnswers[this.getRandomInt(0, 9)] + addOn;
+                answersShown[i] = wrongAnswers[this.randomWithRange(0, 9)] + addOn;
                 cond = this.identical(answersShown);
                 if(n > 100)
                     cond = true;
             }
         }
-        answersShown[this.getRandomInt(0, 3)] = x * y; // Correct answer
+        answersShown[this.randomWithRange(0, 3)] = x * y; // Correct answer
         return answersShown;
     }
 
-    private int getRandomInt(int minValue, int maxValue) {
-        Double tmp = Math.floor(Math.random() * (maxValue+1) + minValue);
-        if(tmp.intValue() > maxValue) this.catchFun();
-        if(tmp.intValue() < minValue) this.catchFun();
-        return tmp.intValue();
+    private int randomWithRange(int min, int max) { // https://stackoverflow.com/questions/7961788/math-random-explained
+        int range = (max - min) + 1;
+        return (int)(Math.random() * range) + min;
     }
 
     private void setx1y1AnswerTime() {
@@ -154,7 +160,7 @@ public class MultiplicationGame {
         }
     }
 
-    // ---> setRandomxAndy AND ---> setCrawlxAndy.
+    // ---> setRandomxAndy AND ---> crawlIt.
     private void setRandomxAndy() {
         // this.sp.playSound(3);
         List xList = this.getAccessablePositions("x");
@@ -162,8 +168,8 @@ public class MultiplicationGame {
         if(xList.size() == 0 | yList.size() == 0) { // Jos ei onnistu löytää yhtään jo laskettua laskua, joka on vielä yli targetin, niin valitaan lasku, joka on pienin vielä suorittamaton
             this.setSmallestNewAsxAndy();
         } else {
-            int xPos = this.getRandomInt(0, xList.size()-1);
-            int yPos = this.getRandomInt(0, yList.size()-1);
+            int xPos = this.randomWithRange(0, xList.size()-1);
+            int yPos = this.randomWithRange(0, yList.size()-1);
 
             if((int) xList.get(xPos) + x0 == this.x  & (int) yList.get(yPos) + y0 == this.y) this.catchFun();
             this.x = (int) xList.get(xPos) + x0;
@@ -175,7 +181,7 @@ public class MultiplicationGame {
     }
 
     // ---> setRandomxAndy
-    private void setCrawlxAndyByIndex(int index, int up, int down, int left, int right) {
+    private void setCrawlxAndyByIndex(int index, int up, int down, int left, int right) { // Tämä pois
         boolean cond = true;
         int xx = this.x;
         int yy = this.y;
@@ -199,48 +205,80 @@ public class MultiplicationGame {
                     this.y = right+y0;
                     break;
             }
-            if(this.y != yy | this.x != xx) cond = false;
+            if(this.y != yy | this.x != xx) cond = false; // Näin pitäisi aina käydä?
+            if(cond) {
+                int zz = 1; // Näin ei ikinä pitäisi käydä?
+            }
             if(this.xLen == 1 & this.yLen == 1) cond = false; // Vain yksi solu, erikoistapaus..
-            index = this.getRandomInt(0, 4);
+            index = this.randomWithRange(0, 4);
         }
-        if(this.x > x1)
-            x0 = -1;
-        if(this.y > y1)
-            x0 = -1;
-        if(this.x < x0)
-            x0 = -1;
-        if(this.y < y0)
-            x0 = -1;
     }
 
     private int getxPos() { return this.x - x0; }
     private int getyPos() { return this.y - y0; }
 
-    // ---> setRandomxAndy (via setCrawlxAndyByIndex)
-    private void setCrawlxAndy() {
-        int up = Math.max(getxPos()-1, 0);
-        int down = Math.min(getxPos()+1, xLen-1);
-        int left = Math.max(0, getyPos()-1);
-        int right = Math.min(yLen-1, getyPos()+1);
-        int[] moveVector = new int[5];
+    private int howManyDirections() { // Kuinka moneen suuntaan voidaan mennä
+        int dirCount = 2;
+        if(getxPos() > 0 & getxPos() < (x1-1)) dirCount = dirCount + 1;
+        if(getyPos() > 0 & getxPos() < (y1-1)) dirCount = dirCount + 1;
+        return dirCount;
+    }
+
+    private void setCrawlxy(List indLargest, int up, int down, int left, int right) {
+        int ind = this.randomWithRange(0, indLargest.size()-1);
+        int dir = (int) indLargest.get(ind);
+
+        switch (dir) { // Asetetaan uusi arvo, joka vastaa korkeinta arvoa neljästä suunnasta
+            case 0:
+                this.x = up + this.x;
+                break;
+            case 1:
+                this.x = down + this.x;
+                break;
+            case 2:
+                this.y = left + this.y;
+                break;
+            case 3:
+                this.y = right + this.y;
+                break;
+        }
+        // if(this.xLen == 1 & this.yLen == 1) cond = false; // <--------- EI TARVITSE TEHDÄ MITÄÄN
+    }
+
+    private void crawlIt() {
+
+        int up = Math.max(-1 , 0); // int up = Math.max(getxPos() -1 , 0);
+        int down = Math.max(1 , 0); // int down = Math.min(getxPos() + 1, xLen - 1);
+        int left = Math.max(0, -1);  // int left = Math.max(0, getyPos() - 1);
+        int right = Math.max(0, 1);  // int right = Math.min(yLen - 1, getyPos() + 1);
 
         // Eri suunnat kentällä
-        moveVector[0] = this.answerTimeMatrix[this.x-x0][this.y-y0];
-        moveVector[1] = this.answerTimeMatrix[up][getyPos()];
-        moveVector[2] = this.answerTimeMatrix[down][getyPos()];
-        moveVector[3] = this.answerTimeMatrix[getxPos()][left];
-        moveVector[4] = this.answerTimeMatrix[getxPos()][right];
+        int[] moveVector = new int[4];
+        int thisX = getxPos()+x0;
+        int thisY = getyPos()+y0;
+        moveVector[0] = this.answerTimeMatrix[up+this.x][thisY]*up; // Jos up == 0 (kuten ylärivillä), niin tämä saa 0-arvon, eikä tule "largest-listaan"
+        moveVector[1] = this.answerTimeMatrix[down+this.x][thisY]*down;
+        moveVector[2] = this.answerTimeMatrix[thisX][left+this.y]*left;
+        moveVector[3] = this.answerTimeMatrix[thisX][right+this.y]*right;
 
         List indLargest = this.getIndecesOfLargest(moveVector); // Etsitään missä suunnassa on suurin arvo (voi olla vielä suorittamaton ruutu)
-        if(indLargest.size() > 0) { // Löytyi uusi paikka --> mennään jompaan kumpaan niistä (tai reunalla vain yksi vaihtoehto)
-            int movePos = (int) this.getRandomInt(0, indLargest.size()-1);
 
-            this.setCrawlxAndyByIndex((int) indLargest.get(movePos), up, down, left, right);
+        if ((indLargest.size() > 0) & (moveVector[(int) indLargest.get(0)] > this.answerTargetTime)) { // Löytyi crawl-positio, pitää olla pienempi kuin answerTargetTime
+            this.setCrawlxy(indLargest, up, down, left, right);
+            this.alreadyOnNew = true;
+
+        } else {
+            this.setRandomxAndy();
+        }
+    }
+
+
+
+/*            this.setCrawlxAndyByIndex((int) indLargest.get(movePos), up, down, left, right); // Arvotaan paikka, jos useampia vaihtoehtoja
+
         } else { // Ei löytynyt mitään uutta kertolaskuparia ---> etsitään parhaiten aikaisemmin osattu
             List indSmallest = this.getIndecesOfSmallest(moveVector);
-
             if(indSmallest.size() == 0) this.catchFun();
-
             int movePos = this.getRandomInt(0, indSmallest.size()-1);
             this.setCrawlxAndyByIndex(movePos, up, down, left, right);
         }
@@ -250,17 +288,18 @@ public class MultiplicationGame {
 
         this.alreadyOnNew = this.onNew();
     }
+ */
 
-    // ---> setRandomxAndy AND ---> setCrawlxAndy
+    // ---> setRandomxAndy AND ---> crawlIt
     private void setNewxAndy() {
         if(this.alreadyOnNew) { // Oltiin edellisellä kierroksella jo uuden päällä
             if (this.answerTime > this.answerTargetTime) { // ja aikaa kului liikaa -> arvotaan
                 this.setRandomxAndy();
             } else {
-                this.setCrawlxAndy(); // Crawl voi päätyä uuteen
+                this.crawlIt(); // Crawl voi päätyä uuteen
             }
         } else {
-            this.setCrawlxAndy(); // Crawl voi päätyä uuteen
+            this.crawlIt(); // Crawl voi päätyä uuteen
         }
         if(this.x > x1 | this.x < x0) this.catchFun();
         if(this.y > y1 | this.y < y0) this.catchFun();
@@ -289,9 +328,9 @@ public class MultiplicationGame {
 
         largest.add(0); // @0 index; Suurin indeksi ehdotus on ensin 0, testataan sen jälkeen löytyykö pienempää?
         for ( int i = 1; i < array.length; i++ ) {
-            if ( array[i] >= array[largest.get(largest.size()-1)] & array[i] > this.answerTargetTime) largest.add(i); // Mennään pienimpään, jos ei uutta vieressä, ei kuitenkaan jo suoritettuun
+            // int largestValue = this.lowestAnswerTimeMatrix [arrayPos[largest.get(largest.size()-1)][0]][arrayPos[largest.get(largest.size()-1)][1]];
+            if ( array[i] >= array[largest.size()-1] ) largest.add(i); // Mennään pienimpään, jos ei uutta vieressä, ei kuitenkaan jo suoritettuun
         }
-
         int biggest = array[largest.get(largest.size()-1)];
         return indexOfAll(biggest, array); // Palauttaa kaikki suurimmat indeksit
     }
@@ -354,33 +393,42 @@ public class MultiplicationGame {
         long answerEndTime = System.currentTimeMillis();
         this.answerTime = (answerEndTime - this.answerStartTime);
         if(this.answer.equals(this.getCorrectAnswer())) {
-            int prevAnswerTime = this.answerTimeMatrix[this.x-x0][this.y-y0];
-            int newTime = (int) Math.min((this.answerTime + prevAnswerTime) / 2, this.initialAnswerTime);
-            this.answerTimeMatrix[this.x-x0][this.y-y0] = newTime;
-            if(newTime > this.answerTargetTime) this.sp.playSound(1);
-            if(newTime <= this.answerTargetTime) this.sp.playSound(3);
+            this.evaluateCorrectAnswer();
         } else { // Vaara vastaus
-            this.sp.playSound(2);
-            this.answerTime = this.answerTime + this.initialAnswerTime;
-            this.answerTime = (int) Math.min(this.answerTime, this.initialAnswerTime);
-            this.answerTimeMatrix[this.x-x0][this.y-y0] = (int) this.answerTime;
+            this.evaluateWrongAnswer();
         }
         this.setPoints();
-
+        this.setLowestAnswerTimeMatrix(); // Käyttää this.answerTime-muuttujaa, johon ylempänä sijoitettu adjusteerattu aika, esim. virheellinen vastaus -> aikaa kasvatettu
         this.checkEndCondition();
     }
+    private void setLowestAnswerTimeMatrix() {
+        this.lowestAnswerTimeMatrix[this.x-x0][this.y-y0] = Math.min(this.lowestAnswerTimeMatrix[this.x-x0][this.y-y0], (int) this.answerTime);
+    }
+    private void evaluateCorrectAnswer() {
+        int prevAnswerTime = this.answerTimeMatrix[this.x-x0][this.y-y0];
+        this.answerTime = (int) Math.min((this.answerTime + prevAnswerTime) / 2, this.initialAnswerTime);
+        this.answerTimeMatrix[this.x-x0][this.y-y0] = (int) this.answerTime;
+        if(this.answerTime > this.answerTargetTime) this.sp.playSound(1);
+        if(this.answerTime <= this.answerTargetTime) this.sp.playSound(3);
+    }
+    private void evaluateWrongAnswer() {
+        this.sp.playSound(2);
+        this.answerTime = this.answerTime + this.initialAnswerTime;
+        this.answerTime = (int) Math.min(this.answerTime, this.initialAnswerTime);
+        this.answerTimeMatrix[this.x-x0][this.y-y0] = (int) this.answerTime;
+    }
 
-    public void setPoints() {
-        if(this.answer.equals(this.getCorrectAnswer())) { // Lisää pisteitä vain jos vastaus on oikea
+    private void setPoints() {
+        // if(this.answer.equals(this.getCorrectAnswer())) { // Lisää pisteitä vain jos vastaus on oikea
             this.previousPoints = this.points;
             // Pisteitä saa siitä paljonko paransi edellistä noopeinta aikaa, heikompi aika ei kuitenkaan vähennä pisteitä
-            double answerTime = this.answerTimeMatrix[this.x-x0][this.y-y0];
-            double timeDiff =  Math.max(0, (answerTime - this.answerTime)); // Nolla tarvitaan kun seuraavaksi nostetaan toiseen potenssiin.
+            double lowestAnswerTime = this.lowestAnswerTimeMatrix[this.x-x0][this.y-y0];
+            double timeDiff =  Math.max(0, (lowestAnswerTime - this.answerTime)); // Nolla tarvitaan kun seuraavaksi nostetaan toiseen potenssiin.
             double mult = 100 - Math.abs(49 - this.y*this.x)*2;
             this.points = this.points +  Math.pow(timeDiff, 2)  / Math.pow(this.initialAnswerTime, 2) * mult; // 100 pistettä on maksimi --> 10000 koko pelistä <--- tähän voisi laittaa vielä vaikeuskertoimen mukaisen kertoimen 100 tilalle?
             this.points = Math.max(this.points, this.previousPoints);
             if(this.answerTime <= this.answerTargetTime) this.points = this.points + 10; // Muualle täytyy tehdä lisäys, että tän voi saada vain kerran
-        }
+        // }
     }
 
     public void setxAndyLen() {
@@ -390,8 +438,8 @@ public class MultiplicationGame {
 
     public void newRound(boolean notFirstRound) {
         this.answerStartTime = System.currentTimeMillis();
-        if(!notFirstRound) this.x = x0; this.y = y0;
-        if(notFirstRound) this.setNewxAndy();
+        if(notFirstRound != true) { this.x = x0; this.y = y0; }
+        if(notFirstRound == true) { this.setNewxAndy(); }
     }
 
     public void checkEndCondition() {
