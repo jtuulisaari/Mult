@@ -2,6 +2,7 @@ package com.example.jtuul.mult;
 
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
 
@@ -28,10 +30,11 @@ import java.util.Random;
 import static java.lang.Thread.sleep;
 
 public class MainActivity extends Activity {
+    public final static String EXTRA_MESSAGE = "com.example.jtuul.mult.MESSAGE";
 
     //private int x0; private int x1; private int y0; private int y1;
     // game; // Tama "aloitus" naytolta
-    int x0 = 1; int x1 = 10; int y0 = 1; int y1 = 10;
+    int x0 = 2; int x1 = 3; int y0 = 2; int y1 = 3;
     public MultiplicationGame game = new MultiplicationGame(x0, x1, y0, y1); // Tama "aloitus" naytolta
     int xLen = this.game.answerTimeMatrix.length;
     int yLen = this.game.answerTimeMatrix[0].length;
@@ -122,11 +125,23 @@ public class MainActivity extends Activity {
     public void newRound(int answer) {
         game.answer = answer;
         game.evaluateAnswer();
+
+        this.checkGameEnded();
         this.setHintText();
         this.game.newRound(true);
         this.gridAdapter.notifyDataSetChanged();
         this.setxTimesyText();
         this.setAnswerButtonsText();
+    }
+
+    public void checkGameEnded() {
+        if(this.game.gameEnded()) { // Jos loppu niin sisään
+            int highScore = this.game.getHighScore();
+            Intent intent = new Intent(this, HighScoreActivity.class);
+            String message = String.valueOf(highScore);
+            intent.putExtra("This is extra comment - no need?", message);
+            startActivity(intent);
+        }
     }
 
     public void onClickBtn1(View v) {
@@ -217,7 +232,7 @@ public class MainActivity extends Activity {
         Animation animation=new ScaleAnimation(5,1,5,1, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f); // https://stackoverflow.com/questions/7677250/animation-of-textviews-text-size & https://stackoverflow.com/questions/7414065/android-scale-animation-on-view
         animation.setDuration(1000);
         // animation.setRepeatMode(Animation.RESTART);
-        animation.setRepeatCount(1);
+        animation.setRepeatCount(0);
         hint.startAnimation(animation);
     }
 

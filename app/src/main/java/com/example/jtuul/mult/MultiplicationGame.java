@@ -23,6 +23,7 @@ import static java.lang.Math.random;
  * TODO: Huomattu Joelin puhelimella, ettei esim. 1:5 * 1:10 toimi (epäsymmetrinen tapaus).
  * TODO: Muuta samalla pistelaskua site, ettei virheen jälkeen voi saada enää pisteitä lähtien siitä, kuinka paljon aika paranee... Tätä varten tarvitaan kuten R:ssä toinen matriisi, josta pisteet?
  * TODO: Tee uusi activity, high score?
+ * TODO: Pisteitä voisi saada kumulatiiviseesti lisää, jos onnistuu alittamaan targetTimen useita kertoja peräkkäin - pitäisikö tämä voida saada vain kerran per lasku (taas uusi matriisi tähän tsekkaukseeen?)?
  *
  * PLAN: tee toinen matriisi, jossa minimiaika, jos tämä alittaa targetTimen niin tämä ei ole "accessable"; lisää sen jälkeen menettely random-valintaan ja pistelaskuun.
  */
@@ -33,17 +34,18 @@ public class MultiplicationGame {
     int y; int y0, y1, yLen;
 
     public Integer answer;
-    final public int initialAnswerTime = 10 * 1000; // Annettava millisekunteissa, jotta vältytään double lukujen vertaillulta!
+    final public int initialAnswerTime = 10 * 2000; // Annettava millisekunteissa, jotta vältytään double lukujen vertaillulta!
     private boolean alreadyOnNew = false;
     // int[][] answerTimeMatrix = new int[10][10];
     public int[][] answerTimeMatrix;
     public int[][] lowestAnswerTimeMatrix;
     private long answerStartTime = 0;
     private double answerTime;
-    public double answerTargetTime = 5 * 1000; // Mikä on vastaukselle tavoite aika
+    public double answerTargetTime = 5 * 2000; // Mikä on vastaukselle tavoite aika
     SoundPlayer sp;
     public double points = 0;
     public double previousPoints = 0;
+    boolean gameEnded = false;
 
     public MultiplicationGame(int x0, int x1, int y0, int y1) { // Konstruktori
 
@@ -56,11 +58,6 @@ public class MultiplicationGame {
         this.initializeMatrix(lowestAnswerTimeMatrix, initialAnswerTime);
         // int[][] relMatrix = new int[xLen][yLen];
         // this.initializeMatrix(relMatrix, 0);
-        int xx = 1;
-    }
-
-    private int test(int x, int y) { // Taman voi myohemmin poistaa
-        return x * y;
     }
 
     public Integer[] getAnswerOptions() {
@@ -107,10 +104,6 @@ public class MultiplicationGame {
         return (int)(Math.random() * range) + min;
     }
 
-    private void setx1y1AnswerTime() {
-        if(this.answerTimeMatrix[0][0] >= this.initialAnswerTime) this.answerTimeMatrix[0][0] = this.answerTimeMatrix[0][0] * this.initialAnswerTime;
-    }
-
     private List getAccessablePositions(String direction) {
         // Tän voisi tehdä indexOf avulla siten, että tehdään matriisi, jossa ao. ehto ja sen jälkeen etsitään listaan kuten alempana ehdon täyttävät indeksit
         // xLen = this.setxAndyLen("x");
@@ -119,7 +112,7 @@ public class MultiplicationGame {
 
         for (int i = 0; i < xLen; i++) {
             for (int k = 0; k < yLen; k++) {
-                if(this.answerTimeMatrix[i][k] > this.answerTargetTime & this.answerTimeMatrix[i][k] < this.initialAnswerTime) {
+                if(this.lowestAnswerTimeMatrix[i][k] > this.answerTargetTime & this.lowestAnswerTimeMatrix[i][k] < this.initialAnswerTime) {
                     if(direction.equals("x")) ret.add(i);
                     if(direction.equals("y")) ret.add(k);
                 }
@@ -134,14 +127,13 @@ public class MultiplicationGame {
 
     private void setSmallestNewAsxAndy() {
         // Etsitään pienimmän tekemättömän (uuden) kertolaskun indeksi
-        // xLen = this.setxAndyLen("x");
-        // yLen = this.setxAndyLen("y");
+        // Tähän mennään vain jos ei löydy yhtään laskua, joka vielä yli targetin ja alle initial-luvun
         List<Integer> posInd = new ArrayList<Integer>();
 
         int current = x1*y1; // Aloitetaan suurimmasta mahdollisesta
         for (int i = 0; i < xLen; i++) {
             for (int k = 0; k < yLen; k++) {
-                if (this.answerTimeMatrix[i][k] == this.initialAnswerTime & (k * i) < current) { // xxx tässä pitää vielä valita näistä pienin
+                if (this.lowestAnswerTimeMatrix[i][k] == this.initialAnswerTime & (k * i) < current) { // xxx tässä pitää vielä valita näistä pienin
                     current = k * i; // Vrt. if-lauseen sisällä oleva ehto; k*i "koko" ei mene loop-järjestyksessä
                     posInd.add(i);
                     posInd.add(k);
@@ -154,15 +146,26 @@ public class MultiplicationGame {
             this.y = (int) posInd.get(posInd.size() - 1) + y0;
             if(this.x > x1 | this.x < x0) this.catchFun();
             if(this.y > y1 | this.y < y0) this.catchFun();
-            this.alreadyOnNew = true; // Arvottu paikka ei koskaan ole uusi
+            // this.alreadyOnNew = true; // Arvottu paikka ei koskaan ole uusi
         } else {
+            // Nyt kerran pelattu peli juuttuu tähän, jos ei uutta initialisointia.
+            this.initializeMatrix(answerTimeMatrix, initialAnswerTime);
+            this.initializeMatrix(lowestAnswerTimeMatrix, initialAnswerTime);
+            this.gameEnded = true;
             this.catchFun(); // Tähän myöhemmin pelin lopetus, kaikki laskut on suoritettu alle targetTimen
         }
     }
 
+    public boolean gameEnded() {
+        return this.gameEnded;
+    }
+
+    public int getHighScore() {
+        return 1000;
+    }
     // ---> setRandomxAndy AND ---> crawlIt.
     private void setRandomxAndy() {
-        // this.sp.playSound(3);
+
         List xList = this.getAccessablePositions("x");
         List yList = this.getAccessablePositions("y");
         if(xList.size() == 0 | yList.size() == 0) { // Jos ei onnistu löytää yhtään jo laskettua laskua, joka on vielä yli targetin, niin valitaan lasku, joka on pienin vielä suorittamaton
@@ -171,7 +174,7 @@ public class MultiplicationGame {
             int xPos = this.randomWithRange(0, xList.size()-1);
             int yPos = this.randomWithRange(0, yList.size()-1);
 
-            if((int) xList.get(xPos) + x0 == this.x  & (int) yList.get(yPos) + y0 == this.y) this.catchFun();
+            //if((int) xList.get(xPos) + x0 == this.x  & (int) yList.get(yPos) + y0 == this.y) this.catchFun();
             this.x = (int) xList.get(xPos) + x0;
             this.y = (int) yList.get(yPos) + y0;
             if(this.x > x1 | this.x < x0) this.catchFun();
@@ -181,7 +184,7 @@ public class MultiplicationGame {
     }
 
     // ---> setRandomxAndy
-    private void setCrawlxAndyByIndex(int index, int up, int down, int left, int right) { // Tämä pois
+    private void setCrawlxAndyByIndexTMP(int index, int up, int down, int left, int right) { // Tämä pois
         boolean cond = true;
         int xx = this.x;
         int yy = this.y;
@@ -224,49 +227,55 @@ public class MultiplicationGame {
         return dirCount;
     }
 
-    private void setCrawlxy(List indLargest, int up, int down, int left, int right) {
+    private void setCrawlxy(List indLargest, int upPos, int downPos, int leftPos, int rightPos) {
         int ind = this.randomWithRange(0, indLargest.size()-1);
         int dir = (int) indLargest.get(ind);
 
         switch (dir) { // Asetetaan uusi arvo, joka vastaa korkeinta arvoa neljästä suunnasta
             case 0:
-                this.x = up + this.x;
+                this.x = upPos + this.x0;
                 break;
             case 1:
-                this.x = down + this.x;
+                this.x = downPos + this.x0;
                 break;
             case 2:
-                this.y = left + this.y;
+                this.y = leftPos + this.y0;
                 break;
             case 3:
-                this.y = right + this.y;
+                this.y = rightPos + this.y0;
                 break;
         }
+        if(this.x > x1 | this.x < x0) this.catchFun();
+        if(this.y > y1 | this.y < y0) this.catchFun();
+
         // if(this.xLen == 1 & this.yLen == 1) cond = false; // <--------- EI TARVITSE TEHDÄ MITÄÄN
     }
 
-    private void crawlIt() {
+    private static int getBorderAdjInd(int ind, int xy0, int xy1) {
+        if(ind < 0) ind = 0;
+        if( (ind > xy1-xy0))  ind = xy1-xy0; // 9 - 6 = 3
+        return ind;
+    }
 
-        int up = Math.max(-1 , 0); // int up = Math.max(getxPos() -1 , 0);
-        int down = Math.max(1 , 0); // int down = Math.min(getxPos() + 1, xLen - 1);
-        int left = Math.max(0, -1);  // int left = Math.max(0, getyPos() - 1);
-        int right = Math.max(0, 1);  // int right = Math.min(yLen - 1, getyPos() + 1);
+    private void crawlIt() {
+        int thisXPos = getxPos();
+        int thisY = getyPos();
+        int upPos =  getBorderAdjInd(thisXPos - 1, x0, x1); // Math.max(-1 , 0); // int up = Math.max(getxPos() -1 , 0);
+        int downPos = getBorderAdjInd(thisXPos + 1, x0, x1); // int down = Math.min(getxPos() + 1, xLen - 1);
+        int leftPos = getBorderAdjInd(thisY-1, y0, y1); // Math.max(0, -1);  // int left = Math.max(0, getyPos() - 1);
+        int rightPos = getBorderAdjInd(thisY+1, y0, y1); //Math.min(0, 1);  // int right = Math.min(yLen - 1, getyPos() + 1);
 
         // Eri suunnat kentällä
         int[] moveVector = new int[4];
-        int thisX = getxPos()+x0;
-        int thisY = getyPos()+y0;
-        moveVector[0] = this.answerTimeMatrix[up+this.x][thisY]*up; // Jos up == 0 (kuten ylärivillä), niin tämä saa 0-arvon, eikä tule "largest-listaan"
-        moveVector[1] = this.answerTimeMatrix[down+this.x][thisY]*down;
-        moveVector[2] = this.answerTimeMatrix[thisX][left+this.y]*left;
-        moveVector[3] = this.answerTimeMatrix[thisX][right+this.y]*right;
+        moveVector[0] = this.answerTimeMatrix[upPos][thisY]*Math.abs(upPos-thisXPos); // Jos Math.abs(up-thisX) = 0 jos meni reunan yli
+        moveVector[1] = this.answerTimeMatrix[downPos][thisY]*Math.abs(downPos-thisXPos);
+        moveVector[2] = this.answerTimeMatrix[thisXPos][leftPos]*Math.abs(leftPos-thisY);
+        moveVector[3] = this.answerTimeMatrix[thisXPos][rightPos]*Math.abs(rightPos-thisY);
 
         List indLargest = this.getIndecesOfLargest(moveVector); // Etsitään missä suunnassa on suurin arvo (voi olla vielä suorittamaton ruutu)
-
         if ((indLargest.size() > 0) & (moveVector[(int) indLargest.get(0)] > this.answerTargetTime)) { // Löytyi crawl-positio, pitää olla pienempi kuin answerTargetTime
-            this.setCrawlxy(indLargest, up, down, left, right);
+            this.setCrawlxy(indLargest, upPos, downPos, leftPos, rightPos);
             this.alreadyOnNew = true;
-
         } else {
             this.setRandomxAndy();
         }
@@ -276,7 +285,8 @@ public class MultiplicationGame {
 
 /*            this.setCrawlxAndyByIndex((int) indLargest.get(movePos), up, down, left, right); // Arvotaan paikka, jos useampia vaihtoehtoja
 
-        } else { // Ei löytynyt mitään uutta kertolaskuparia ---> etsitään parhaiten aikaisemmin osattu
+        } else { // Ei löytynyt mitään uutta kertolasku
+        paria ---> etsitään parhaiten aikaisemmin osattu
             List indSmallest = this.getIndecesOfSmallest(moveVector);
             if(indSmallest.size() == 0) this.catchFun();
             int movePos = this.getRandomInt(0, indSmallest.size()-1);
@@ -301,9 +311,6 @@ public class MultiplicationGame {
         } else {
             this.crawlIt(); // Crawl voi päätyä uuteen
         }
-        if(this.x > x1 | this.x < x0) this.catchFun();
-        if(this.y > y1 | this.y < y0) this.catchFun();
-
     }
 
     private boolean onNew() {
@@ -426,7 +433,7 @@ public class MultiplicationGame {
             double timeDiff =  Math.max(0, (lowestAnswerTime - this.answerTime)); // Nolla tarvitaan kun seuraavaksi nostetaan toiseen potenssiin.
             double mult = 100 - Math.abs(49 - this.y*this.x)*2;
             this.points = this.points +  Math.pow(timeDiff, 2)  / Math.pow(this.initialAnswerTime, 2) * mult; // 100 pistettä on maksimi --> 10000 koko pelistä <--- tähän voisi laittaa vielä vaikeuskertoimen mukaisen kertoimen 100 tilalle?
-            this.points = Math.max(this.points, this.previousPoints);
+            this.points = Math.max(this.points, this.previousPoints); // Pisteet eivät voi laskea <---- Näin ei voi käydä...
             if(this.answerTime <= this.answerTargetTime) this.points = this.points + 10; // Muualle täytyy tehdä lisäys, että tän voi saada vain kerran
         // }
     }
