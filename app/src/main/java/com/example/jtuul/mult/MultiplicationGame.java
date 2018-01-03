@@ -406,7 +406,7 @@ public class MultiplicationGame {
         }
         this.setPoints();
         this.setLowestAnswerTimeMatrix(); // Käyttää this.answerTime-muuttujaa, johon ylempänä sijoitettu adjusteerattu aika, esim. virheellinen vastaus -> aikaa kasvatettu
-        this.checkEndCondition();
+
     }
     private void setLowestAnswerTimeMatrix() {
         this.lowestAnswerTimeMatrix[this.x-x0][this.y-y0] = Math.min(this.lowestAnswerTimeMatrix[this.x-x0][this.y-y0], (int) this.answerTime);
@@ -449,13 +449,13 @@ public class MultiplicationGame {
         if(notFirstRound == true) { this.setNewxAndy(); }
     }
 
-    public void checkEndCondition() {
+    public boolean checkEndCondition() {
         List<Integer> ret = new ArrayList<Integer>();
-        boolean endIt = true;
+        boolean endIt = true; //
         for (int i = 0; i < xLen; i++) {
             for (int k = 0; k < yLen; k++) {
                 if(this.answerTimeMatrix[i][k] > this.answerTargetTime) { // Ovatko kaikki vastaukset tavoitetta nopeammat?
-                    endIt = false;
+                    endIt = false; // Löytyi vielä tekemistä.
                     break;
                 }
             }
@@ -463,7 +463,10 @@ public class MultiplicationGame {
         if(endIt) {
             sp.playSound(4);
             this.initializeMatrix(answerTimeMatrix, initialAnswerTime);
+            this.initializeMatrix(lowestAnswerTimeMatrix, initialAnswerTime);
+            endIt = true;
         }
+        return endIt;
     }
 
     public void setSoundPlayer(Activity act) {

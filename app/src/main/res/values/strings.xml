@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Mult</string>
     <string name="test">test</string>
-    <string name="title_activity_high_score">HighScoreActivity</string>
+    <string name="title_activity_high_score">High Scores</string>
 </resources>

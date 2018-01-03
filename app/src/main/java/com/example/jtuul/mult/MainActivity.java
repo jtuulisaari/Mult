@@ -12,6 +12,7 @@ import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -29,7 +30,7 @@ import java.util.Random;
 
 import static java.lang.Thread.sleep;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.example.jtuul.mult.MESSAGE";
 
     //private int x0; private int x1; private int y0; private int y1;
@@ -66,6 +67,9 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        this.gameEnded();
+
         new Random().setSeed(1);
         game.setSoundPlayer(this);
 
@@ -125,23 +129,24 @@ public class MainActivity extends Activity {
     public void newRound(int answer) {
         game.answer = answer;
         game.evaluateAnswer();
-
-        this.checkGameEnded();
+        if(game.checkEndCondition()) this.gameEnded();
         this.setHintText();
         this.game.newRound(true);
+        // this.checkGameEnded();
+
         this.gridAdapter.notifyDataSetChanged();
         this.setxTimesyText();
         this.setAnswerButtonsText();
     }
 
-    public void checkGameEnded() {
-        if(this.game.gameEnded()) { // Jos loppu niin sisään
+    public void gameEnded() {
+        // if(this.game.gameEnded()) { // Jos loppu niin sisään
             int highScore = this.game.getHighScore();
             Intent intent = new Intent(this, HighScoreActivity.class);
             String message = String.valueOf(highScore);
-            intent.putExtra("This is extra comment - no need?", message);
+            intent.putExtra(EXTRA_MESSAGE, message);
             startActivity(intent);
-        }
+        // }
     }
 
     public void onClickBtn1(View v) {
