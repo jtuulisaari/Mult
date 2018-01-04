@@ -2,26 +2,19 @@ package com.example.jtuul.mult;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.GridLayout;
 import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,7 +33,7 @@ public class HighScoreActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
-        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        String message = intent.getStringExtra(GameActivity.EXTRA_MESSAGE);
 
         this.newScore = Integer.parseInt(message);
         this.loadOldScores(); // ---> this.oldScores
@@ -90,7 +83,7 @@ public class HighScoreActivity extends AppCompatActivity {
 
 
 
-/*        TextView tv1 = findViewById(R.id.score1);
+/*      TextView tv1 = findViewById(R.id.score1);
         TextView tv2 = findViewById(R.id.score2);
         TextView tv3 = findViewById(R.id.score3);
         tv1.setText((Integer) this.oldScores.get(0));

@@ -1,13 +1,10 @@
 package com.example.jtuul.mult;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.GridView;
 import android.widget.TextView;
 
 /**
@@ -21,9 +18,9 @@ public class CustomGridAdapter extends BaseAdapter {
     private Context context;
     private String[] items;
     LayoutInflater inflater;
-    MainActivity ma;
+    GameActivity ma;
 
-    public CustomGridAdapter(Context context, String[] items, MainActivity ma) {
+    public CustomGridAdapter(Context context, String[] items, GameActivity ma) {
         this.context = context;
         this.items = items;
         inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
