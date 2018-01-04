@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.gameEnded();
+        this.gameEnded(); // Poista tämä jos haluat pelata, tämä tehty testauksen takia (high score)
 
         new Random().setSeed(1);
         game.setSoundPlayer(this);
