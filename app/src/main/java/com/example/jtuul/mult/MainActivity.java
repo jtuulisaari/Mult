@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendMessage(View view) {
+
         Intent intent = new Intent(this, GameActivity.class);
         String message = String.valueOf(111);
         intent.putExtra(EXTRA_MESSAGE, message);
