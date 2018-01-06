@@ -7,4 +7,22 @@
     tools:context="com.example.jtuul.mult.MainActivityFragment"
     tools:showIn="@layout/activity_main2">
 
+    <TextView
+        android:id="@+id/tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#f7f7f3"
+        android:layout_marginBottom="10dp"
+        android:padding="10dp"
+        android:fontFamily="sans-serif-condensed"
+        />
+    <GridView
+        android:id="@+id/mainGridView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:numColumns="10"/>
+
+
+
 </android.support.constraint.ConstraintLayout>

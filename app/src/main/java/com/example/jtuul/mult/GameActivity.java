@@ -24,10 +24,9 @@ import static java.lang.Thread.sleep;
 public class GameActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.example.jtuul.mult.MESSAGE";
 
-
-
     //private int x0; private int x1; private int y0; private int y1;
     // game; // Tama "aloitus" naytolta
+
     int x0 = 2; int x1 = 3; int y0 = 2; int y1 = 3;
     public MultiplicationGame game = new MultiplicationGame(x0, x1, y0, y1); // Tama "aloitus" naytolta
     int xLen = this.game.answerTimeMatrix.length;
@@ -88,7 +87,7 @@ public class GameActivity extends AppCompatActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //text.setText((String) (gridView.getItemAtPosition(position)));
+                // text.setText((String) (gridView.getItemAtPosition(position)));
                 // Log.i("ITEM_CLICKED", "" + (String) (gridView.getItemAtPosition(position)));
             }
         });
