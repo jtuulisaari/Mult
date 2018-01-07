@@ -47,6 +47,10 @@ public class MultiplicationGame {
     public double previousPoints = 0;
     boolean gameEnded = false;
 
+    public MultiplicationGame() {
+        // Konstruktori, jotta voidaan käyttää metodeja..
+    }
+
     public MultiplicationGame(int x0, int x1, int y0, int y1) { // Konstruktori
 
         this.x0 = x0; this.x1 = x1; this.y0 = y0; this.y1 = y1;
@@ -384,7 +388,7 @@ public class MultiplicationGame {
         return ret;
     }
 
-    private void initializeMatrix(int[][] matrix, int value) {
+    public void initializeMatrix(int[][] matrix, int value) {
         for (int i = 0; i < matrix.length; i++) {
             for (int k = 0; k < matrix[0].length; k++) {
                 matrix[i][k] = (int) value;

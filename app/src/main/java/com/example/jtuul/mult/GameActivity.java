@@ -45,7 +45,6 @@ public class GameActivity extends AppCompatActivity {
     public String[] getMultiplicationIntegers() {
         int n = 0;
         String[] items = new String[game.xLen*game.yLen];
-
         for (int i = x0; i <= x1; ++i) {
             for (int j = y0; j <= y1; ++j) {
                 items[n] = String.valueOf(i*j);
