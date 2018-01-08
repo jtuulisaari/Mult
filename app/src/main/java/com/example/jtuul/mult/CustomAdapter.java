@@ -38,7 +38,7 @@ public class CustomAdapter extends BaseAdapter {
         }
 
         TextView gridTextView = (TextView) convertView.findViewById(R.id.grid_item);
-        gridTextView.setBackgroundColor(Color.BLUE);
+        gridTextView.setBackgroundColor(Color.GRAY);
         gridTextView.setText(items[position]);
 
         this.changeColor(position, gridTextView);
@@ -56,24 +56,34 @@ public class CustomAdapter extends BaseAdapter {
     }
 
     private void changeRowsAndColsValues(int position) {
-        int value = ma.chooseMatrix[this.getxAndyFromPosition(position, "x")][this.getxAndyFromPosition(position, "y")]; // value nykyisestä napista
+        int xInd = getxAndyFromPosition(position, "x");
+        int yInd = getxAndyFromPosition(position, "y");
+        int value = ma.chooseMatrix[xInd][yInd]; // value nykyisestä napista
         int changeValue = -value + 1;
-        ma.chooseMatrix[this.getxAndyFromPosition(position, "x") ][this.getxAndyFromPosition(position, "y") ] = changeValue;
+        // ma.chooseMatrix[xInd][yInd] = changeValue;
+
         for (int i = 0; i < XLEN; i++) {
-            ma.chooseMatrix[i][getxAndyFromPosition(position, "x")] = changeValue;
-            ma.chooseMatrix[getxAndyFromPosition(position, "y")][i] = changeValue;
+            ma.chooseMatrix[i][yInd] = ma.chooseMatrix[i][yInd] + changeValue;
+            ma.chooseMatrix[xInd][i] = ma.chooseMatrix[xInd][i] + changeValue;
         }
         this.clicked = false; // Tämä estää rekursion
         this.notifyDataSetChanged();
     }
 
     private void changeColor(int position, TextView gridTextView) {
-        if(ma.chooseMatrix[getxAndyFromPosition(position, "x")][getxAndyFromPosition(position, "y")] == 1) {
-            gridTextView.setBackgroundColor(Color.RED);
+        int xInd = getxAndyFromPosition(position, "x");
+        int yInd = getxAndyFromPosition(position, "y");
+
+        if(ma.chooseMatrix[xInd][yInd] == 0) {
+            gridTextView.setBackgroundColor(Color.LTGRAY);
         }
-        if(ma.chooseMatrix[getxAndyFromPosition(position, "x")][getxAndyFromPosition(position, "y")] == 0) {
-            gridTextView.setBackgroundColor(Color.YELLOW);
+        if(ma.chooseMatrix[xInd][yInd] == 1) {
+            gridTextView.setBackgroundColor(Color.GRAY);
         }
+        if(ma.chooseMatrix[xInd][yInd] >= 2) {
+            gridTextView.setBackgroundColor(Color.GREEN);
+        }
+
     }
 
     @Override
@@ -99,7 +109,8 @@ public class CustomAdapter extends BaseAdapter {
         int ret = 0;
         if(direction.equals("x")) { ret = xInd; }
         if(direction.equals("y")) { ret = yInd; }
-        return ret;
+        int xxx = 1;
+        return ret; // Indeksi lähtee nollasta eikä ykkösestä kuten MultiplicationGame-luokassa.
     }
 
     public int getPositionFromxAndy(int x, int y) {
