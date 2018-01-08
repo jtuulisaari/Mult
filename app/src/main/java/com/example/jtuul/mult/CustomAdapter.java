@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.util.Collection;
-
 /**
  * Created by jtuul on 12/9/2017.
  * Täältä voisi ehkä kopioida myöhemmin metodit, joilla saadaan myös kuvat "nappuloihin", jos näin halutaan:
@@ -66,22 +64,27 @@ public class CustomAdapter extends BaseAdapter {
             ma.chooseMatrix[i][yInd] = ma.chooseMatrix[i][yInd] + changeValue;
             ma.chooseMatrix[xInd][i] = ma.chooseMatrix[xInd][i] + changeValue;
         }
+
         this.clicked = false; // Tämä estää rekursion
         this.notifyDataSetChanged();
     }
 
     private void changeColor(int position, TextView gridTextView) {
+
         int xInd = getxAndyFromPosition(position, "x");
         int yInd = getxAndyFromPosition(position, "y");
 
         if(ma.chooseMatrix[xInd][yInd] == 0) {
             gridTextView.setBackgroundColor(Color.LTGRAY);
+            ma.multVec[xInd] = 0;
         }
         if(ma.chooseMatrix[xInd][yInd] == 1) {
             gridTextView.setBackgroundColor(Color.GRAY);
+            ma.multVec[xInd] = 0;
         }
         if(ma.chooseMatrix[xInd][yInd] >= 2) {
             gridTextView.setBackgroundColor(Color.GREEN);
+            ma.multVec[xInd] = 1;
         }
 
     }

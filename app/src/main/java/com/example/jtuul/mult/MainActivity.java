@@ -13,16 +13,25 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.example.jtuul.mult.MESSAGE";
 
-    int x0 = 1; int x1 = 10; int y0 = 1; int y1 = 10;    // Täysikenttä tässä vaiheessa!
-    int xLen = x1-x0+1; int yLen = y1-y0+1;
+    int x0 = 1;
+    int x1 = 10;
+    int y0 = 1;
+    int y1 = 10;    // Täysikenttä tässä vaiheessa!
+    int xLen = x1 - x0 + 1;
+    int yLen = y1 - y0 + 1;
     public int[][] chooseMatrix = new int[xLen][xLen];
 
     public MultiplicationGame gmGrid = new MultiplicationGame(x0, x1, y0, y1); // Tama "aloitus" nayttöä varten
     public final String[] items = this.getMultiplicationIntegers();
     private CustomAdapter gridAdapter;
+
+    public int[] multVec = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 /*    @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -33,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onTouchEvent(event);
     } */
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,32 +90,31 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendMessage(View view) {
         Intent intent = new Intent(this, GameActivity.class);
-        String message = String.valueOf(111);
+        String message = String.valueOf(this.multVec);
         intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
     }
 
     @Override
-    public void onStop(){
+    public void onStop() {
         super.onStop();
     }
 
     public String[] getMultiplicationIntegers() {
         int n = 0;
-        String[] items = new String[gmGrid.xLen*gmGrid.yLen];
+        String[] items = new String[gmGrid.xLen * gmGrid.yLen];
 
         for (int i = x0; i <= x1; ++i) {
             for (int j = y0; j <= y1; ++j) {
-                items[n] = String.valueOf(i*j);
+                items[n] = String.valueOf(i * j);
                 n = ++n;
             }
         }
         return items;
     }
-
 }
